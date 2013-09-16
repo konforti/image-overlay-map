@@ -31,7 +31,10 @@ var initialize = function() {
     img.src = imgSrc.value;
       img.onload = setupOverlay.bind(this, img, map);
   });
-
+  
+  google.maps.event.addListener(map, 'click', function(e) {
+    placeMarker(e.latLng, map);
+  });
 };
 
 /**
@@ -72,6 +75,37 @@ function setupOverlay(img, map) {
     msg.push('SE', fourth.lat(), fourth.lng(), '\n');
     message.innerText = msg.join(' ');
   });
+}
+
+/**
+ * Adds new marker.
+ */
+function placeMarker(position, map) {
+  var marker = new google.maps.Marker({
+    position: position,
+    draggable: true,
+    map: map
+  });
+  
+  var infowindow = new google.maps.InfoWindow({
+      content: marker.getPosition().toString()
+    }); 
+  
+  google.maps.event.addListener(marker, 'click', function(e) {
+    infowindow.setContent(marker.getPosition().toString());
+    infowindow.open(map, marker);
+  });
+  
+  google.maps.event.addListener(marker, 'dragstart', function() {
+    infowindow.close();
+  });
+  
+  // Set new landmark in center.
+  map.panTo(marker.position);
+}
+
+function popup(content) {
+  
 }
 
 google.maps.event.addDomListener(window, 'load', initialize);
