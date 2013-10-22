@@ -32,7 +32,7 @@ var initialize = function() {
       img.onload = setupOverlay.bind(this, img, map);
   });
   
-  google.maps.event.addListener(map, 'click', function(e) {
+  google.maps.event.addListener(map, 'dblclick', function(e) {
     placeMarker(e.latLng, map);
   });
 };
