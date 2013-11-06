@@ -62,13 +62,13 @@ overlaytiler.TransformedImage.prototype.draw = function(ctx) {
   var tc = x1 + this.translateX_;
   var tf = y1 + this.translateY_;
   var ta = ratio;
-  var td = (y2 - y1) / w;
-  var tb = (x3 - x1) / h;
   var te = ratio;
 
   ctx.setTransform(ta, 0, 0, te, tc, tf);
-  // ctx.setTransform(ta, td, tb, te, tc, tf);
   ctx.drawImage(this.img_, 0, 0, w, h);
+  
+  overlaytiler.TransformedImage.newW = w * ratio;
+  overlaytiler.TransformedImage.newH = h * ratio;
 };
 
 /**

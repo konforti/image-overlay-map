@@ -196,6 +196,7 @@ overlaytiler.AffineOverlay.prototype.getVirtualDot_ = function() {
       dots[1].y + dots[2].y - dots[0].y);
 };
 
+
 /**
  * Gets the top left rendered Point of the canvas.
  * @private
@@ -223,3 +224,7 @@ overlaytiler.AffineOverlay.prototype.getDotLatLngs = function() {
   }
   return result;
 };
+
+overlaytiler.AffineOverlay.prototype.getDotLatLngs = function() {
+    
+}

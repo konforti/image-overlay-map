@@ -2,7 +2,8 @@ var initialize = function() {
   var mapOptions = {
     center: new google.maps.LatLng(32, 34),
     zoom: 8,
-    mapTypeId: 'roadmap'
+    mapTypeId: 'roadmap',
+    disableDoubleClickZoom: true
   };
   var div = document.getElementById('map');
   var map = new google.maps.Map(div, mapOptions);
@@ -64,15 +65,10 @@ function setupOverlay(img, map) {
    */
   google.maps.event.addListener(overlay, 'change', function () {
     var dots = overlay.getDotLatLngs();
-    var virtualDot = this.getVirtualDot_();
-    var proj = this.getProjection();
-    fourth = proj.fromDivPixelToLatLng(virtualDot);
     var msg = ['Image Diractions'];
     msg.push('\n');
-    msg.push('NW', dots[0].lat(), dots[0].lng(), '\n');
     msg.push('NE', dots[1].lat(), dots[1].lng(), '\n');
     msg.push('SW', dots[2].lat(), dots[2].lng(), '\n');
-    msg.push('SE', fourth.lat(), fourth.lng(), '\n');
     message.innerText = msg.join(' ');
   });
 }
