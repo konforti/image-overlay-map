@@ -1,3 +1,42 @@
+var overlaytiler = overlaytiler || {};
+
+/**
+ * A map overlay that allows affine transformations on its image.
+ *
+ * @constructor
+ * @extends google.maps.OverlayView
+ * @param {!HTMLImageElement} img The image to display.
+ */
+overlaytiler.AffineOverlay = function (img) {
+  'use strict';
+  var canvas = this.canvas = document.createElement('canvas');
+  canvas.width  = 2000;
+  canvas.height = 2000;
+  canvas.style.position = 'absolute';
+  this.ctx = canvas.getContext('2d');
+
+  overlaytiler.imageOrig = img;
+  overlaytiler.image = img;
+  this.iamge = img;
+};
+
+overlaytiler.AffineOverlay.prototype = new google.maps.OverlayView();
+
+/**
+ * The overlay should be offset this number of pixels from the left of the map
+ * div when first added.
+ * @private
+ * @type number
+ */
+overlaytiler.AffineOverlay.prototype.DEFAULT_X_OFFSET = 100;
+
+/**
+ * The overlay should be offset this number of pixels from the top of the map
+ * div when first added.
+ * @private
+ * @type number
+ */
+overlaytiler.AffineOverlay.prototype.DEFAULT_Y_OFFSET = 50;
 // Copyright 2011 Google
 
 /**
@@ -21,132 +60,94 @@
  */
 
 /**
- * A map overlay that allows affine transformations on its image.
- *
- * @constructor
- * @extends google.maps.OverlayView
- * @param {!HTMLImageElement} img  The image to display.
- */
-overlaytiler.AffineOverlay = function(img) {
-  var canvas = this.canvas_ = document.createElement('canvas');
-  // TODO(cbro): calculate the width/height on the fly in case it's larger than
-  // 2000px. This should be good enough for now.
-  canvas.width = 2000;
-  canvas.height = 2000;
-  canvas.style.position = 'absolute';
-  this.ctx = canvas.getContext('2d');
-
-  this.img_ = img;
-};
-
-overlaytiler.AffineOverlay.prototype = new google.maps.OverlayView;
-
-/**
- * The overlay should be offset this number of pixels from the left of the map
- * div when first added.
- * @private
- * @type number
- */
-overlaytiler.AffineOverlay.prototype.DEFAULT_X_OFFSET_ = 100;
-
-/**
- * The overlay should be offset this number of pixels from the top of the map
- * div when first added.
- * @private
- * @type number
- */
-overlaytiler.AffineOverlay.prototype.DEFAULT_Y_OFFSET_ = 50;
-
-/**
  * The image that has been overlaid and transformed according to the control
  * points (dots).
  * @private
- * @type overlaytiler.TransformedImage
+ * @type overlaytiler.TransformedImagedots[0].x
  */
-overlaytiler.AffineOverlay.prototype.ti_;
+overlaytiler.AffineOverlay.prototype.ti;
 
 /**
  * The points that control the transformation of this overlay.
  * @private
  * @type Array.<overlaytiler.Dot>
  */
-overlaytiler.AffineOverlay.prototype.dots_;
+overlaytiler.AffineOverlay.prototype.dots;
 
 /**
  * Adds the image in the top left of the current map viewport.
  * The overlay can be transformed via three control points, and translated via
- * a larger control point that sits in the middle of the image overlay.
+ * a larger control point that sits in the middle of   this.ti_.setTranslate(-topLeft.x, -topLeft.y);the image overlay.
  */
-overlaytiler.AffineOverlay.prototype.onAdd = function() {
-  var proj = this.getProjection();
-  var bounds = this.getMap().getBounds();
-  var sw = proj.fromLatLngToContainerPixel(bounds.getSouthWest());
-  var ne = proj.fromLatLngToContainerPixel(bounds.getNorthEast());
+overlaytiler.AffineOverlay.prototype.onAdd = function () {
+  'use strict';
+  var proj = this.getProjection(),
+      bounds = this.getMap().getBounds(),
+      sw = proj.fromLatLngToContainerPixel(bounds.getSouthWest()),
+      ne = proj.fromLatLngToContainerPixel(bounds.getNorthEast());
 
-  // TODO(cbro): Give the overlay an initial top-left LatLng instead of
-  // determining it based off the current map viewport.
-  var x = sw.x + this.DEFAULT_X_OFFSET_;
-  var y = ne.y + this.DEFAULT_Y_OFFSET_;
+  var x = sw.x + this.DEFAULT_X_OFFSET,
+      y = ne.y + this.DEFAULT_Y_OFFSET;
 
   var pane = this.getPanes().overlayImage;
-  this.getPanes().overlayLayer.appendChild(this.canvas_);
+  this.getPanes().overlayLayer.appendChild(this.canvas);
 
-  var img = this.img_;
-  var dots = this.dots_ = [
-      new overlaytiler.Dot(pane, x, y),
+  var img = this.iamge;
+  
+  var dots = this.dots = [
       new overlaytiler.Dot(pane, x + img.width, y),
-      new overlaytiler.Dot(pane, x, y + img.height)];
-
+      new overlaytiler.Dot(pane, x, y + img.height)
+  ];
+  
+  this.topLeftPoint = new overlaytiler.Dot(pane, x, y);
+  
   for (var i = 0, dot; dot = dots[i]; ++i) {
     google.maps.event.addListener(dot, 'dragstart',
-        this.setMapDraggable_.bind(this, false));
+        this.setMapDraggable.bind(this, false));
 
     google.maps.event.addListener(dot, 'dragend',
-        this.setMapDraggable_.bind(this, true));
+        this.setMapDraggable.bind(this, true));
 
-    google.maps.event.addListener(dot, 'change', this.renderCanvas_.bind(this));
+    google.maps.event.addListener(dot, 'change', this.renderCanvas.bind(this));
   }
 
-  this.ti_ = new overlaytiler.TransformedImage(
-      img, dots[0], dots[1], dots[2]);
+  this.ti_ = new overlaytiler.TransformedImage(img, dots[0], dots[1]);
   this.ti_.draw(this.ctx);
 
   // The Mover allows the overlay to be translated.
   var mover = new overlaytiler.Mover(pane, dots);
   google.maps.event.addListener(mover, 'dragstart',
-      this.setMapDraggable_.bind(this, false));
+      this.setMapDraggable.bind(this, false));
 
   google.maps.event.addListener(mover, 'dragend',
-      this.setMapDraggable_.bind(this, true));
+      this.setMapDraggable.bind(this, true));
 
-  this.renderCanvas_();
+  this.renderCanvas();
 };
 
 /**
  * Notify that the canvas should be rendered.
- * Essentially limits rendering to a max of 66fps.
  * @private
  */
-overlaytiler.AffineOverlay.prototype.renderCanvas_ = function() {
+overlaytiler.AffineOverlay.prototype.renderCanvas = function() {
   if (this.renderTimeout) return;
   this.renderTimeout = window.setTimeout(
-      this.forceRenderCanvas_.bind(this), 15);
+      this.forceRenderCanvas.bind(this), 15);
 };
 
 /**
  * Actually renders to the canvas.
  * @private
  */
-overlaytiler.AffineOverlay.prototype.forceRenderCanvas_ = function() {
+overlaytiler.AffineOverlay.prototype.forceRenderCanvas = function() {
   // make sure the whole image is in view.
-  var topLeft = this.getTopLeftPoint_();
-  this.canvas_.style.top = topLeft.y + 'px';
-  this.canvas_.style.left = topLeft.x + 'px';
+  var topLeft = this.getTopLeftPoint();
+  this.canvas.style.top = topLeft.y + 'px';
+  this.canvas.style.left = topLeft.x + 'px';
 
   var ctx = this.ctx;
-  ctx.setTransform(1, 0, 0, 1, 0, 0); // identity
-  ctx.clearRect(0, 0, this.canvas_.width, this.canvas_.height);
-  this.ti_.setTranslate(-topLeft.x, -topLeft.y);
+//  ctx.setTransform(1, 0, 0, 1, 0, 0); // identity
+  ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
   this.ti_.draw(ctx);
 
   delete this.renderTimeout;
@@ -158,7 +159,7 @@ overlaytiler.AffineOverlay.prototype.forceRenderCanvas_ = function() {
  * @private
  * @param {boolean} draggable  Whether the map should be draggable.
  */
-overlaytiler.AffineOverlay.prototype.setMapDraggable_ = function(draggable) {
+overlaytiler.AffineOverlay.prototype.setMapDraggable = function(draggable) {
   this.getMap().set('draggable', draggable);
 };
 
@@ -167,48 +168,29 @@ overlaytiler.AffineOverlay.prototype.setMapDraggable_ = function(draggable) {
  * @param {number} opacity  The opacity, from 0.0 to 1.0.
  */
 overlaytiler.AffineOverlay.prototype.setOpacity = function(opacity) {
-  this.canvas_.style.opacity = opacity;
+  this.canvas.style.opacity = opacity;
 };
 
 /**
  * @inheritDoc
  */
 overlaytiler.AffineOverlay.prototype.draw = function() {
-  this.renderCanvas_();
+  this.renderCanvas();
 };
 
 /**
  * TODO(cbro): remove the overlay from the map.
  * @inheritDoc
  */
-overlaytiler.AffineOverlay.prototype.onRemove = function() {
-};
-
-/**
- * Calculates where the fourth anchor should be.
- * @private
- * @return {google.maps.Point} the coordinates of the fourth point.
- */
-overlaytiler.AffineOverlay.prototype.getVirtualDot_ = function() {
-  var dots = this.dots_;
-  return new google.maps.Point(
-      dots[1].x + dots[2].x - dots[0].x,
-      dots[1].y + dots[2].y - dots[0].y);
-};
-
+overlaytiler.AffineOverlay.prototype.onRemove = function() {};
 
 /**
  * Gets the top left rendered Point of the canvas.
  * @private
  * @return {google.maps.Point} the top left point.
  */
-overlaytiler.AffineOverlay.prototype.getTopLeftPoint_ = function() {
-  var dots = this.dots_;
-  var virtualDot = this.getVirtualDot_();
-
-  return new google.maps.Point(
-      Math.min(dots[0].x, dots[1].x, dots[2].x, virtualDot.x),
-      Math.min(dots[0].y, dots[1].y, dots[2].y, virtualDot.y));
+overlaytiler.AffineOverlay.prototype.getTopLeftPoint = function() {
+  return this.topLeftPoint
 };
 
 /**
@@ -218,13 +200,17 @@ overlaytiler.AffineOverlay.prototype.getTopLeftPoint_ = function() {
 overlaytiler.AffineOverlay.prototype.getDotLatLngs = function() {
   var proj = this.getProjection();
   var result = [];
-  var dots = this.dots_;
+  var tlp = this.topLeftPoint;
+  var dots = this.dots;
+  
+  dots[0].x = tlp.x + overlaytiler.image.width;
+  dots[0].y = tlp.y;
+  
+  dots[1].x = tlp.x;
+  dots[1].y = tlp.y + overlaytiler.image.height;
+  
   for (var i = 0, dot; dot = dots[i]; ++i) {
     result.push(proj.fromDivPixelToLatLng(new google.maps.Point(dot.x, dot.y)));
   }
   return result;
 };
-
-overlaytiler.AffineOverlay.prototype.getDotLatLngs = function() {
-    
-}

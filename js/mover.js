@@ -1,24 +1,4 @@
-// Copyright 2011 Google
-
-/**
- * @license
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-/**
- * @author Chris Broadfoot (cbro@google.com)
- */
+var overlaytiler = overlaytiler || {};
 
 /**
  * Creates a mover (big dot) that moves a bunch of other dots.
@@ -30,15 +10,16 @@
  * @extends overlaytiler.Dot
  */
 overlaytiler.Mover = function(parent, dots) {
+
   // hide the dot until its position is calculated.
   var dot = new overlaytiler.Dot(parent, -1e5, -1e5);
-  dot.controlDots_ = dots;
+  dot.controlDots = dots;
   dot.getCanvas().className += ' mover';
-  dot.onMouseMove_ = this.onMouseMove_.bind(dot);
+  dot.onMouseMove = this.onMouseMove.bind(dot);
 
-  google.maps.event.addListener(dots[0], 'change', this.onDotChange_.bind(dot));
-  google.maps.event.addListener(dots[2], 'change', this.onDotChange_.bind(dot));
-  this.onDotChange_.call(dot);
+  google.maps.event.addListener(dots[0], 'change', this.onDotChange.bind(dot));
+
+  this.onDotChange.call(dot);
 
   return dot;
 };
@@ -48,10 +29,11 @@ overlaytiler.Mover = function(parent, dots) {
  * @this overlaytiler.Dot
  * @private
  */
-overlaytiler.Mover.prototype.onDotChange_ = function() {
-  var dots = this.controlDots_;
-  this.x = (dots[0].x + dots[2].x) / 2;
-  this.y = (dots[0].y + dots[2].y) / 2;
+overlaytiler.Mover.prototype.onDotChange = function() {
+
+  var dots = this.controlDots;
+  this.x = (dots[0].x + dots[1].x) / 2;
+  this.y = (dots[0].y + dots[1].y) / 2;
   this.render();
 };
 
@@ -63,7 +45,8 @@ overlaytiler.Mover.prototype.onDotChange_ = function() {
  * @param {number} deltax  the amount to move on the x-axis.
  * @param {number} deltay  the amount to move on the y-axis.
  */
-overlaytiler.Mover.prototype.translateDot_ = function(dot, deltax, deltay) {
+overlaytiler.Mover.prototype.translateDot = function(dot, deltax, deltay) {
+
   dot.x += deltax;
   dot.y += deltay;
   dot.render();
@@ -75,15 +58,16 @@ overlaytiler.Mover.prototype.translateDot_ = function(dot, deltax, deltay) {
  * @param {MouseEvent} e  the event containing coordinates of current mouse
  * position.
  */
-overlaytiler.Mover.prototype.onMouseMove_ = function(e) {
-  var deltax = e.clientX - this.cx;
-  var deltay = e.clientY - this.cy;
+overlaytiler.Mover.prototype.onMouseMove = function(e) {
+  
+  var deltax = e.clientX - this.cx,
+      deltay = e.clientY - this.cy;
 
   this.x += deltax;
   this.y += deltay;
 
-  for (var i = 0, dot; dot = this.controlDots_[i]; ++i) {
-    overlaytiler.Mover.prototype.translateDot_(dot, deltax, deltay);
+  for (var i = 0, var dot; dot = this.controlDots[i]; ++i) {
+    overlaytiler.Mover.prototype.translateDot(dot, deltax, deltay);
   }
   this.render();
 

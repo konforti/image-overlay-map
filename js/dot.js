@@ -1,24 +1,4 @@
-// Copyright 2011 Google
-
-/**
- * @license
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-/**
- * @author Chris Broadfoot (cbro@google.com)
- */
+var overlaytiler = overlaytiler || {};
 
 /**
  * A draggable Dot, rendered to the page.
@@ -29,19 +9,20 @@
  * @param {number} y  initial y-axis position.
  */
 overlaytiler.Dot = function(parent, x, y) {
+
   this.x = x;
   this.y = y;
 
-  var canvas = this.canvas_ = document.createElement('div');
+  var canvas = this.canvas = document.createElement('div');
   canvas.className = 'dot';
   parent.appendChild(canvas);
 
-  this.onMouseMove_ = this.onMouseMove_.bind(this);
-  this.onMouseDown_ = this.onMouseDown_.bind(this);
-  this.onMouseUp_ = this.onMouseUp_.bind(this);
+  this.onMouseMove = this.onMouseMove.bind(this);
+  this.onMouseDown = this.onMouseDown.bind(this);
+  this.onMouseUp = this.onMouseUp.bind(this);
 
-  canvas.addEventListener('mousedown', this.onMouseDown_, true);
-  window.addEventListener('mouseup', this.onMouseUp_, true);
+  canvas.addEventListener('mousedown', this.onMouseDown, true);
+  window.addEventListener('mouseup', this.onMouseUp, true);
 
   this.style = canvas.style;
   this.render();
@@ -51,13 +32,15 @@ overlaytiler.Dot = function(parent, x, y) {
  * @return {Element} the canvas.
  */
 overlaytiler.Dot.prototype.getCanvas = function() {
-  return this.canvas_;
+
+  return this.canvas;
 };
 
 /**
  * Renders this dot to the page, at its location.
  */
 overlaytiler.Dot.prototype.render = function() {
+
   this.style.left = this.x + 'px';
   this.style.top = this.y + 'px';
   google.maps.event.trigger(this, 'change');
@@ -69,7 +52,8 @@ overlaytiler.Dot.prototype.render = function() {
  * @param {MouseEvent} e  the event containing coordinates of current mouse
  * position.
  */
-overlaytiler.Dot.prototype.onMouseMove_ = function(e) {
+overlaytiler.Dot.prototype.onMouseMove = function(e) {
+
   this.x += e.clientX - this.cx;
   this.y += e.clientY - this.cy;
 
@@ -85,11 +69,11 @@ overlaytiler.Dot.prototype.onMouseMove_ = function(e) {
  * @param {MouseEvent} e  the event containing coordinates of current mouse
  * position.
  */
-overlaytiler.Dot.prototype.onMouseDown_ = function(e) {
+overlaytiler.Dot.prototype.onMouseDown = function(e) {
+
   this.cx = e.clientX;
   this.cy = e.clientY;
-  this.mouseMoveListener_ = google.maps.event.addDomListener(window,
-      'mousemove', this.onMouseMove_.bind(this));
+  this.mouseMoveListener = google.maps.event.addDomListener(window, 'mousemove', this.onMouseMove.bind(this));
   google.maps.event.trigger(this, 'dragstart');
 };
 
@@ -97,9 +81,10 @@ overlaytiler.Dot.prototype.onMouseDown_ = function(e) {
  * Disables editing of the dot's location.
  * @private
  */
-overlaytiler.Dot.prototype.onMouseUp_ = function() {
-  if (this.mouseMoveListener_) {
-    google.maps.event.removeListener(this.mouseMoveListener_);
+overlaytiler.Dot.prototype.onMouseUp = function() {
+  
+  if (this.mouseMoveListener) {
+    google.maps.event.removeListener(this.mouseMoveListener);
   }
   google.maps.event.trigger(this, 'dragend');
 };
