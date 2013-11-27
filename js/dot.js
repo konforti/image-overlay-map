@@ -22,13 +22,13 @@
 
 /**
  * A draggable Dot, rendered to the page.
- *
+ *https://dl.dropboxusercontent.com/s/xl6tah59yiqzuj7/tautphaus%20park%20zoo.gif
  * @constructor
  * @param {Node} parent  the element to add this dot to.
  * @param {number} x  initial x-axis position.
  * @param {number} y  initial y-axis position.
  */
-overlaytiler.Dot = function(parent, x, y) {
+overlaytiler.Dot = function(parent, x, y, id) {
   this.x = x;
   this.y = y;
 
@@ -36,6 +36,7 @@ overlaytiler.Dot = function(parent, x, y) {
   canvas.className = 'dot';
   parent.appendChild(canvas);
 
+  this.id = id;
   this.onMouseMove_ = this.onMouseMove_.bind(this);
   this.onMouseDown_ = this.onMouseDown_.bind(this);
   this.onMouseUp_ = this.onMouseUp_.bind(this);
@@ -97,9 +98,26 @@ overlaytiler.Dot.prototype.onMouseDown_ = function(e) {
  * Disables editing of the dot's location.
  * @private
  */
-overlaytiler.Dot.prototype.onMouseUp_ = function(e) {
+overlaytiler.Dot.prototype.onMouseUp_ = function() {
   if (this.mouseMoveListener_) {
     google.maps.event.removeListener(this.mouseMoveListener_);
   }
   google.maps.event.trigger(this, 'dragend');
+  
+  this.fixDots_();
 };
+
+/**
+ * @private
+ */
+overlaytiler.Dot.prototype.fixDots_ = function() {
+    if (this.id == 'ne') {
+    this.x = overlaytiler.TransformedImage.imgProp.NE_x;
+    this.y = overlaytiler.TransformedImage.imgProp.NE_y;
+  }
+  else if (this.id == 'sw') {
+    this.x = overlaytiler.TransformedImage.imgProp.SW_x;
+    this.y = overlaytiler.TransformedImage.imgProp.SW_y;
+  }
+  this.render();
+}

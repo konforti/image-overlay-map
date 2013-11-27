@@ -93,8 +93,8 @@ overlaytiler.AffineOverlay.prototype.onAdd = function() {
 
   var img = this.img_;
   var dots = this.dots_ = [
-      new overlaytiler.Dot(pane, x + img.width, y),
-      new overlaytiler.Dot(pane, x, y + img.height)
+      new overlaytiler.Dot(pane, x + img.width, y, 'ne'),
+      new overlaytiler.Dot(pane, x, y + img.height, 'sw')
   ];
 
   for (var i = 0, dot; dot = dots[i]; ++i) {
@@ -104,7 +104,8 @@ overlaytiler.AffineOverlay.prototype.onAdd = function() {
     google.maps.event.addListener(dot, 'dragend',
         this.setMapDraggable_.bind(this, true));
 
-    google.maps.event.addListener(dot, 'change', this.renderCanvas_.bind(this));
+    google.maps.event.addListener(dot, 'change',
+        this.renderCanvas_.bind(this));
   }
 
   this.ti_ = new overlaytiler.TransformedImage(img, dots[0], dots[1]);
