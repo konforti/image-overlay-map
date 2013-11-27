@@ -59,11 +59,14 @@ overlaytiler.TransformedImage.prototype.draw = function(ctx) {
   ctx.drawImage(this.img_, 0, 0, w, h);
   
   overlaytiler.TransformedImage.imgProp = {};
-
+  overlaytiler.TransformedImage.imgProp.NW_x = Math.abs(this.translateX_);
+  overlaytiler.TransformedImage.imgProp.NW_y = Math.abs(this.translateY_);
   overlaytiler.TransformedImage.imgProp.NE_x = Math.abs(this.translateX_) + (w * ratio);
   overlaytiler.TransformedImage.imgProp.NE_y = Math.abs(this.translateY_);
   overlaytiler.TransformedImage.imgProp.SW_x = Math.abs(this.translateX_);
-  overlaytiler.TransformedImage.imgProp.SW_y = Math.abs(this.translateY_) + (h * ratio);  
+  overlaytiler.TransformedImage.imgProp.SW_y = Math.abs(this.translateY_) + (h * ratio);
+//  console.log(this);
+  
 };
 
 /**

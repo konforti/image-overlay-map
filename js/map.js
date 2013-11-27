@@ -13,7 +13,7 @@ var initialize = function() {
   searchBox.bindTo('bounds', map);
 
   google.maps.event.addListener(searchBox, 'place_changed', function() {
-    var place = searchBox.getPlace();
+    var place = searchBox.getPlace();console.log(place);
     // If the place has a geometry, then present it on a map.
     if (typeof place.geometry !== 'undefined') {
       if (place.geometry.viewport) {
@@ -30,7 +30,7 @@ var initialize = function() {
   var imgSrc = document.getElementById('img-src');
   google.maps.event.addDomListener(imgSrc, 'change', function() {
     img.src = imgSrc.value;
-    img.onload = setupOverlay.bind(this, img, map);
+      img.onload = setupOverlay.bind(this, img, map);
   });
   
   google.maps.event.addListener(map, 'dblclick', function(e) {
@@ -64,8 +64,7 @@ function setupOverlay(img, map) {
    * Displays Image corners info.
    */
   google.maps.event.addListener(overlay, 'change', function () {
-//    var dots = overlay.getDotLatLngs();
-    var dots = overlay.getDotLatLngs(dots);
+    var dots = overlay.getDotLatLngs();
     var msg = ['Image Diractions'];
     msg.push('\n');
     msg.push('NE', dots[0].lat(), dots[0].lng(), '\n');
