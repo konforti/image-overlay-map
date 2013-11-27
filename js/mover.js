@@ -12,14 +12,14 @@ var overlaytiler = overlaytiler || {};
 overlaytiler.Mover = function(parent, dots) {
 
   // hide the dot until its position is calculated.
-  var dot = new overlaytiler.Dot(parent, -1e5, -1e5);
-  dot.controlDots = dots;
+  var dot = new overlaytiler.Dot(parent, -1e5, -1e5, 'mover');
+  dot.controlDots_ = dots;
   dot.getCanvas().className += ' mover';
   dot.onMouseMove = this.onMouseMove.bind(dot);
 
-  google.maps.event.addListener(dots[0], 'change', this.onDotChange.bind(dot));
-
-  this.onDotChange.call(dot);
+  google.maps.event.addListener(dots[0], 'change', this.onDotChange_.bind(dot));
+  google.maps.event.addListener(dots[1], 'change', this.onDotChange_.bind(dot));
+  this.onDotChange_.call(dot);
 
   return dot;
 };
@@ -29,9 +29,8 @@ overlaytiler.Mover = function(parent, dots) {
  * @this overlaytiler.Dot
  * @private
  */
-overlaytiler.Mover.prototype.onDotChange = function() {
-
-  var dots = this.controlDots;
+overlaytiler.Mover.prototype.onDotChange_ = function() {
+  var dots = this.controlDots_;
   this.x = (dots[0].x + dots[1].x) / 2;
   this.y = (dots[0].y + dots[1].y) / 2;
   this.render();

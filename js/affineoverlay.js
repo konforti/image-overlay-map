@@ -91,16 +91,13 @@ overlaytiler.AffineOverlay.prototype.onAdd = function () {
 
   var pane = this.getPanes().overlayImage;
   this.getPanes().overlayLayer.appendChild(this.canvas);
-
-  var img = this.iamge;
   
-  var dots = this.dots = [
-      new overlaytiler.Dot(pane, x + img.width, y),
-      new overlaytiler.Dot(pane, x, y + img.height)
+  var img = this.img_;
+  var dots = this.dots_ = [
+      new overlaytiler.Dot(pane, x + img.width, y, 'ne'),
+      new overlaytiler.Dot(pane, x, y + img.height, 'sw')
   ];
-  
-  this.topLeftPoint = new overlaytiler.Dot(pane, x, y);
-  
+
   for (var i = 0, dot; dot = dots[i]; ++i) {
     google.maps.event.addListener(dot, 'dragstart',
         this.setMapDraggable.bind(this, false));
@@ -108,7 +105,8 @@ overlaytiler.AffineOverlay.prototype.onAdd = function () {
     google.maps.event.addListener(dot, 'dragend',
         this.setMapDraggable.bind(this, true));
 
-    google.maps.event.addListener(dot, 'change', this.renderCanvas.bind(this));
+    google.maps.event.addListener(dot, 'change',
+        this.renderCanvas_.bind(this));
   }
 
   this.ti_ = new overlaytiler.TransformedImage(img, dots[0], dots[1]);
@@ -189,8 +187,12 @@ overlaytiler.AffineOverlay.prototype.onRemove = function() {};
  * @private
  * @return {google.maps.Point} the top left point.
  */
-overlaytiler.AffineOverlay.prototype.getTopLeftPoint = function() {
-  return this.topLeftPoint
+overlaytiler.AffineOverlay.prototype.getTopLeftPoint_ = function() {
+  var dots = this.dots_;
+
+  return new google.maps.Point(
+      Math.min(dots[0].x, dots[1].x),
+      Math.min(dots[0].y, dots[1].y));
 };
 
 /**
