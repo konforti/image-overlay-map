@@ -29,11 +29,10 @@
  * @param {overlaytiler.Dot} b  the top-right control point.
  * @param {overlaytiler.Dot} c  the bottom-right control point.
  */
-overlaytiler.TransformedImage = function(img, a, b, c) {
+overlaytiler.TransformedImage = function(img, a, b) {
   this.img_ = img;
   this.a_ = a;
   this.b_ = b;
-  this.c_ = c;
   this.translateX_ = 0;
   this.translateY_ = 0;
 };
@@ -45,30 +44,21 @@ overlaytiler.TransformedImage = function(img, a, b, c) {
 overlaytiler.TransformedImage.prototype.draw = function(ctx) {
   var x1 = this.a_.x;
   var x2 = this.b_.x;
-  var x3 = this.c_.x;
 
   var y1 = this.a_.y;
   var y2 = this.b_.y;
-  var y3 = this.c_.y;
 
   var h = this.img_.height;
   var w = this.img_.width;
 
-
-  var ratioX = (x2 - x1) / w;
-  var ratioY = (y3 - y1) / h;
+  var ratioX = (x1 - x2) / w;
+  var ratioY = (y2 - y1) / h;
   var ratio = ratioX <= ratioY ? ratioX : ratioY;
-
-  var tc = x1 + this.translateX_;
-  var tf = y1 + this.translateY_;
-  var ta = ratio;
-  var te = ratio;
-
-  ctx.setTransform(ta, 0, 0, te, tc, tf);
+  
+  ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
   ctx.drawImage(this.img_, 0, 0, w, h);
   
-  overlaytiler.TransformedImage.newW = w * ratio;
-  overlaytiler.TransformedImage.newH = h * ratio;
+  overlaytiler.TransformedImage.ratio = this.img_;
 };
 
 /**

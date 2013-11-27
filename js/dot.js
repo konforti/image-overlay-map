@@ -97,7 +97,7 @@ overlaytiler.Dot.prototype.onMouseDown_ = function(e) {
  * Disables editing of the dot's location.
  * @private
  */
-overlaytiler.Dot.prototype.onMouseUp_ = function() {
+overlaytiler.Dot.prototype.onMouseUp_ = function(e) {
   if (this.mouseMoveListener_) {
     google.maps.event.removeListener(this.mouseMoveListener_);
   }

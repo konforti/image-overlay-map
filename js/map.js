@@ -67,8 +67,8 @@ function setupOverlay(img, map) {
     var dots = overlay.getDotLatLngs();
     var msg = ['Image Diractions'];
     msg.push('\n');
-    msg.push('NE', dots[1].lat(), dots[1].lng(), '\n');
-    msg.push('SW', dots[2].lat(), dots[2].lng(), '\n');
+    msg.push('NE', dots[0].lat(), dots[0].lng(), '\n');
+    msg.push('SW', dots[1].lat(), dots[1].lng(), '\n');
     message.innerText = msg.join(' ');
   });
 }

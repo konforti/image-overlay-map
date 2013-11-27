@@ -93,9 +93,9 @@ overlaytiler.AffineOverlay.prototype.onAdd = function() {
 
   var img = this.img_;
   var dots = this.dots_ = [
-      new overlaytiler.Dot(pane, x, y),
       new overlaytiler.Dot(pane, x + img.width, y),
-      new overlaytiler.Dot(pane, x, y + img.height)];
+      new overlaytiler.Dot(pane, x, y + img.height)
+  ];
 
   for (var i = 0, dot; dot = dots[i]; ++i) {
     google.maps.event.addListener(dot, 'dragstart',
@@ -107,8 +107,7 @@ overlaytiler.AffineOverlay.prototype.onAdd = function() {
     google.maps.event.addListener(dot, 'change', this.renderCanvas_.bind(this));
   }
 
-  this.ti_ = new overlaytiler.TransformedImage(
-      img, dots[0], dots[1], dots[2]);
+  this.ti_ = new overlaytiler.TransformedImage(img, dots[0], dots[1]);
   this.ti_.draw(this.ctx);
 
   // The Mover allows the overlay to be translated.
@@ -181,21 +180,7 @@ overlaytiler.AffineOverlay.prototype.draw = function() {
  * TODO(cbro): remove the overlay from the map.
  * @inheritDoc
  */
-overlaytiler.AffineOverlay.prototype.onRemove = function() {
-};
-
-/**
- * Calculates where the fourth anchor should be.
- * @private
- * @return {google.maps.Point} the coordinates of the fourth point.
- */
-overlaytiler.AffineOverlay.prototype.getVirtualDot_ = function() {
-  var dots = this.dots_;
-  return new google.maps.Point(
-      dots[1].x + dots[2].x - dots[0].x,
-      dots[1].y + dots[2].y - dots[0].y);
-};
-
+overlaytiler.AffineOverlay.prototype.onRemove = function() {};
 
 /**
  * Gets the top left rendered Point of the canvas.
@@ -204,11 +189,10 @@ overlaytiler.AffineOverlay.prototype.getVirtualDot_ = function() {
  */
 overlaytiler.AffineOverlay.prototype.getTopLeftPoint_ = function() {
   var dots = this.dots_;
-  var virtualDot = this.getVirtualDot_();
 
   return new google.maps.Point(
-      Math.min(dots[0].x, dots[1].x, dots[2].x, virtualDot.x),
-      Math.min(dots[0].y, dots[1].y, dots[2].y, virtualDot.y));
+      Math.min(dots[0].x, dots[1].x),
+      Math.min(dots[0].y, dots[1].y));
 };
 
 /**
@@ -224,7 +208,3 @@ overlaytiler.AffineOverlay.prototype.getDotLatLngs = function() {
   }
   return result;
 };
-
-overlaytiler.AffineOverlay.prototype.getDotLatLngs = function() {
-    
-}

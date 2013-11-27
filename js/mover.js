@@ -37,7 +37,7 @@ overlaytiler.Mover = function(parent, dots) {
   dot.onMouseMove_ = this.onMouseMove_.bind(dot);
 
   google.maps.event.addListener(dots[0], 'change', this.onDotChange_.bind(dot));
-  google.maps.event.addListener(dots[2], 'change', this.onDotChange_.bind(dot));
+  google.maps.event.addListener(dots[1], 'change', this.onDotChange_.bind(dot));
   this.onDotChange_.call(dot);
 
   return dot;
@@ -50,8 +50,8 @@ overlaytiler.Mover = function(parent, dots) {
  */
 overlaytiler.Mover.prototype.onDotChange_ = function() {
   var dots = this.controlDots_;
-  this.x = (dots[0].x + dots[2].x) / 2;
-  this.y = (dots[0].y + dots[2].y) / 2;
+  this.x = (dots[0].x + dots[1].x) / 2;
+  this.y = (dots[0].y + dots[1].y) / 2;
   this.render();
 };
 
